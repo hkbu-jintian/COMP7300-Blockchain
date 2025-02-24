@@ -18,8 +18,8 @@ class Transaction(Printable):
         self.signature = signature
     
     def to_ordered_dict(self):
-        # 用 python 内置的 OrderedDict 库创建排好序的字典
-        # 可以避免转换为字符串之后，做各种验证时因为顺序问题而导致的验证失败问题
+        # Use the python built-in OrderedDict library to create a sorted dictionary
+        # This can avoid the problem of verification failure due to the order of the string
         return OrderedDict([
             ('sender', self.sender),
             ('recipient', self.recipient),

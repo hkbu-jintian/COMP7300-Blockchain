@@ -5,7 +5,7 @@ genesis_block = {
 }
 blockchain = list([genesis_block])
 open_transactions = list()
-owner = 'mi'
+owner = 'Mike'
 
 
 def hash_block(block):
@@ -39,9 +39,8 @@ def add_transaction(recipient, sender=owner, amount=1.0):
 
 
 def mine_block():
-    # pass
     last_block = blockchain[-1]
-    # 给上一个块进行 hash 计算
+    # Calculate the hash value of the previous block
     hashed_block = hash_block(last_block)
     
     block = {
@@ -50,7 +49,7 @@ def mine_block():
         'transactions': open_transactions
     }
 
-    # 加入新块
+    # Add the new block
     blockchain.append(block)
 
 
@@ -92,13 +91,11 @@ while waiting_for_input:
     print('1: Add a new transacntion value')
     print('2: Mine a new block')
     print('3: Output the blockahcin amount')
-    print('h: Manipulate the chain')
     print('q: Quit')
 
     user_choice = get_user_choice()
 
     if user_choice == '1':
-        # tx_amount = get_transaction_value()
         tx_data = get_transaction_value()
         recipient, amount = tx_data
 
@@ -110,17 +107,6 @@ while waiting_for_input:
         mine_block()
     elif user_choice == '3':
         print_blockchain_elements()
-    elif user_choice == 'h':  # 模拟hack攻击
-        if len(blockchain) >= 1:
-            blockchain[0] = {
-                'previous_hash': '',
-                'index': 0,
-                'transactions': [{
-                    'sender': 'A',
-                    'recipient': 'B',
-                    'amount': 100.0
-                }]
-            }
     elif user_choice == 'q':
         waiting_for_input = False
     else:
