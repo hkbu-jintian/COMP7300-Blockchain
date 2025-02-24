@@ -20,8 +20,6 @@ Node 2 (This node runs in port 5001, you can change the port by yourself)
 ```
 python node.py -p 5001
 ```
-## Notice
-There are two `node.py` files. One is `OLD_node.py`, which is the legacy version of `node.py` and it only enable users to interact with the blockchain locally in the terminal. The new `node.py` achieves APIs server, and the Web UI is allowed.
 ## Install Pycrypto
 Install `pycryptodome`, instead of `pycrypto`.
 ```
