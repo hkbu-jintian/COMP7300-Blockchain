@@ -45,7 +45,7 @@ class Blockchain:
             3. because using json to load data may occur some order problem
         """
         try:
-            with open('blockchain-{}.txt'.format(self.node_id), mode='r') as f:
+            with open('blockchain/blockchain-{}.txt'.format(self.node_id), mode='r') as f:
                 file_content = f.readlines()
 
                 blockchain = json.loads(file_content[0][:-1]) # Add [:-1] to remove the \n at the end
@@ -86,7 +86,7 @@ class Blockchain:
             2. use pickle to dumps binary data
         """
         try:
-            with open('blockchain-{}.txt'.format(self.node_id), mode='w') as f:
+            with open('blockchain/blockchain-{}.txt'.format(self.node_id), mode='w') as f:
                 # Because block is an object of the Block class, it cannot be converted to a String type directly using json.dumps
                 # So we need to convert all blocks in the blockchain list to dicts, using block.__dict__
                 saveable_chain = [block.__dict__

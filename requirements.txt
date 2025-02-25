@@ -2,3 +2,4 @@ pycryptodome
 flask
 flask-cors
 requests
+ecdsa

@@ -71,8 +71,7 @@
                   v-model="form.url" 
                   placeholder="localhost:5001"
                   prefix-icon="el-icon-connection"
-                  style="width: 350px;"
-                  @keyup.enter.native="onAddNode('form')">
+                  style="width: 350px;">
                 </el-input>
               </el-form-item>
               <el-form-item>
@@ -146,13 +145,11 @@
           this.$refs[formName].validate((valid) => {
             axios.post('/node', { node: vm.form.url })
               .then((response) => {
-                vm.success = 'Stored node successfully'
-                vm.error = null
-                vm.peerNodes = response.data.all_nodes
+                this.message('success', 'Stored node successfully')
+                this.peerNodes = response.data.all_nodes
               })
               .catch((error) => {
-                vm.success = null
-                vm.error = error.response.data.message
+                this.message('error', error.response.data.message)
               })
           })
         },
@@ -164,19 +161,14 @@
           }).then(() => {
             axios.delete('/node', { data: { node: url } })
               .then(response => {
-                this.success = 'Delete node successfully'
-                this.error = null
+                this.message('success', 'Delete node successfully')
                 this.peerNodes = response.data.all_nodes
               })
               .catch(error => {
-                this.success = null
-                this.error = error.response.data.message
+                this.message('error', error.response.data.message)
               })
           }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: 'Delete cancelled'
-            })
+            this.message('info', 'Delete cancelled')
           })
         },
         onLoadNodes: function() {
@@ -192,8 +184,15 @@
               this.error = error.response.data.message
             })
         },
-        goToHome: function() {
+        goToHome: function() { // Navigate to the dashboard page
           window.location.href = '/'
+        },
+        message: function(type, message) {
+          this.$message({
+            message: message,
+            type: type,
+            duration: 2000
+          })
         }
       }
     })

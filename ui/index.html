@@ -237,10 +237,7 @@
             }).then(() => {
               this.createNewWallet()
             }).catch(() => {
-              this.$message({
-                type: 'info',
-                message: 'Wallet creation cancelled'
-              })
+              this.message('info', 'Wallet creation cancelled')
             })
           } else {
             this.createNewWallet()
@@ -302,7 +299,7 @@
               })
               .catch(function (error) {
                 vm.dataLoading = false
-                vm.error = 'Something went wrong'
+                vm.message('error', 'Something went wrong')
               })
           } else {
             axios.get('/transactions')
@@ -312,7 +309,7 @@
               })
               .catch(function (error) {
                 vm.dataLoading = false
-                vm.error = 'Something went wrong'
+                vm.message('error', 'Something went wrong')
               })
           }
         },
@@ -355,33 +352,27 @@
             vm.dataLoading = true
             vm.miningLoading = true
             if (!this.wallet) {
-              this.success = null
-              this.error = 'Please Load Wallet first'
+              this.message('error', 'Please Load Wallet first')
               vm.dataLoading = false
               vm.miningLoading = false
               return
             }
             axios.post('/mine')
               .then(function (response) {
-                vm.error = null
-                vm.success = response.data.message
                 vm.balance = response.data.funds
                 console.log(response.data)
                 vm.dataLoading = false
                 vm.miningLoading = false
+                vm.message('success', response.data.message)
                 vm.onLoadData()
               })
               .catch(function (error) {
-                vm.success = null
-                vm.error = error.response.data.message
                 vm.dataLoading = false
                 vm.miningLoading = false
+                vm.message('error', error.response.data.message)
               })
           }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: 'Mining cancelled'
-            })
+            vm.message('info', 'Mining cancelled')
           })
         },
         onResolve: function() { // resolve conflicts
@@ -389,26 +380,27 @@
           vm.dataLoading = true
           axios.post('/resolve-conflicts')
             .then(response => {
-              vm.error = null
-              vm.success = response.data.message
               vm.dataLoading = false
               vm.onLoadData()
+              this.message('success', response.data.message)
             })
             .catch(error => {
-              vm.success = null
-              vm.error = error.response.data.message
               vm.dataLoading = false
+              this.message('error', error.response.data.message)
             })
         },
         onCopy: function(identifier) {
+          this.message('success', `${identifier} copied to clipboard!`)
+        },
+        goToNetwork: function() { // Navigate to the network management page
+          window.location.href = '/network'
+        },
+        message: function(type, message) {
           this.$message({
-            message: `${identifier} copied to clipboard!`,
-            type: 'success',
+            message: message,
+            type: type,
             duration: 2000
           })
-        },
-        goToNetwork: function() {
-          window.location.href = '/network'
         }
       }
     })

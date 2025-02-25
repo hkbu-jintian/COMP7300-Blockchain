@@ -17,7 +17,7 @@ class Wallet:
     def save_keys(self):
         if self.public_key != None and self.private_key != None:
             try:
-                with open('wallet-{}.txt'.format(self.node_id), mode='w') as f:
+                with open('wallet/wallet-{}.txt'.format(self.node_id), mode='w') as f:
                     f.write(self.public_key)
                     f.write('\n')
                     f.write(self.private_key)
@@ -29,7 +29,7 @@ class Wallet:
     # Load the public and private keys from the local file
     def load_keys(self):
         try:
-            with open('wallet-{}.txt'.format(self.node_id), mode='r') as f:
+            with open('wallet/wallet-{}.txt'.format(self.node_id), mode='r') as f:
                 keys = f.readlines()
                 public_key = keys[0][:-1]  # Because the public key was written with '\n', the last character is not read
                 private_key = keys[1]
