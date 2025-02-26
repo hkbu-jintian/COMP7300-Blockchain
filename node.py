@@ -5,9 +5,10 @@ from wallet import Wallet
 from blockchain import Blockchain
 
 app = Flask(__name__, template_folder='ui', static_folder='ui', static_url_path='/ui')
+CORS(app)
+
 # wallet = Wallet()
 # blockchain = Blockchain(wallet.public_key)
-CORS(app)
 
 # Home page route
 @app.route('/', methods=['GET'])  
@@ -301,8 +302,9 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument('-p', '--port', type=int, default=5000)
+    parser.add_argument('-debug', action='store_true', help='Enable debug mode')
     args = parser.parse_args()
     port = args.port
     wallet = Wallet(port)
     blockchain = Blockchain(wallet.public_key, port)
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=args.debug)

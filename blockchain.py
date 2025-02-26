@@ -2,6 +2,7 @@ from functools import reduce
 from uuid import uuid4
 import json
 import requests
+import os
 # import pickle
 
 from utility.hash_util import hash_block
@@ -86,6 +87,8 @@ class Blockchain:
             2. use pickle to dumps binary data
         """
         try:
+            # Create blockchain directory if it doesn't exist
+            os.makedirs('blockchain', exist_ok=True)
             with open('blockchain/blockchain-{}.txt'.format(self.node_id), mode='w') as f:
                 # Because block is an object of the Block class, it cannot be converted to a String type directly using json.dumps
                 # So we need to convert all blocks in the blockchain list to dicts, using block.__dict__

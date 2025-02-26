@@ -136,6 +136,10 @@
           url: null
         }
       },
+      mounted: function () {
+        this.port = window.location.port || '5000'
+        document.title = 'Network - Node: ' + this.port
+      },
       created: function() {
         this.onLoadNodes()
       },

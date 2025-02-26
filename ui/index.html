@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
   <!-- <link rel="stylesheet" href="/ui/css/elementui.css"> -->
   <link rel="stylesheet" href="/ui/css/index.css">
-  <title>BUCoins Dashboard</title>
+  <title>BUCoins</title>
 </head>
 <body>
   <el-container id="app">
@@ -213,6 +213,11 @@
           amount: 0.0
         },
         miningLoading: false,
+        port: null
+      },
+      mounted: function () {
+        this.port = window.location.port || '5000'
+        document.title = 'BUCoins - Node: ' + this.port
       },
       created: function () {
         this.onLoadWallet()
@@ -323,9 +328,7 @@
                 amount: vm.outgoingTx.amount
               })
                 .then(function(response) {
-                  vm.error = null
-                  vm.success = response.data.message
-                  console.log(response.data)
+                  vm.message('success', response.data.message)
                   vm.balance = response.data.funds
                   vm.txLoading = false
                   vm.outgoingTx = {
@@ -334,9 +337,7 @@
                   }
                 })
                 .catch(function(error) {
-                  console.error(error)
-                  vm.success = null
-                  vm.error = error.response.data.message
+                  vm.message('error', error.response.data.message)
                   vm.txLoading = false
                 })
             }

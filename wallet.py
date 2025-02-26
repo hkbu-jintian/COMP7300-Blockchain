@@ -1,5 +1,6 @@
 from ecdsa import SigningKey, VerifyingKey, SECP256k1
 import binascii
+import os
 
 class Wallet:
     def __init__(self, node_id):
@@ -17,6 +18,8 @@ class Wallet:
     def save_keys(self):
         if self.public_key != None and self.private_key != None:
             try:
+                # Create wallet directory if it doesn't exist
+                os.makedirs('wallet', exist_ok=True)
                 with open('wallet/wallet-{}.txt'.format(self.node_id), mode='w') as f:
                     f.write(self.public_key)
                     f.write('\n')
