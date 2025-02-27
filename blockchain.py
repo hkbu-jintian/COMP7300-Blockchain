@@ -3,7 +3,6 @@ from uuid import uuid4
 import json
 import requests
 import os
-# import pickle
 
 from utility.hash_util import hash_block
 from utility.verification import Verification

@@ -13,7 +13,7 @@ class Wallet:
         private_kay, public_key = self.generate_keys()
         self.private_key = private_kay
         self.public_key = public_key
-    
+
     # Save the public and private keys
     def save_keys(self):
         if self.public_key != None and self.private_key != None:
@@ -50,13 +50,11 @@ class Wallet:
         return (binascii.hexlify(pvk.to_string()).decode('ascii'),
                 binascii.hexlify(pbk.to_string()).decode('ascii'))
 
-    # Generate signature 
-    # When signing, the DER encoding is converted to uncompressed encoding
+    # Generate signature
     def sign_transaction(self, sender, recipient, amount):
         sk = SigningKey.from_string(binascii.unhexlify(self.private_key), curve=SECP256k1)
         h = (str(sender) + str(recipient) + str(amount)).encode('utf8')
         signature = sk.sign(h) # The generated signature is binary
-        # The format of signature is DER encoding, which needs to be converted to uncompressed encoding
         return binascii.hexlify(signature).decode('ascii')
 
     # Verify signature
