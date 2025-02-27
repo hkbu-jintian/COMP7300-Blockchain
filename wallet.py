@@ -43,17 +43,16 @@ class Wallet:
             print('Loading wallet failed...')
             return False
 
-    # Generate and return the public and private key pair using ECC
+    # Generate and return the private and public key pair using ECC
     def generate_keys(self):
-        sk = SigningKey.generate(curve=SECP256k1)
-        vk = sk.get_verifying_key()
-        return (binascii.hexlify(sk.to_string()).decode('ascii'),
-                binascii.hexlify(vk.to_string()).decode('ascii'))
+        pvk = SigningKey.generate(curve=SECP256k1) # private key
+        pbk = pvk.get_verifying_key() # public key
+        return (binascii.hexlify(pvk.to_string()).decode('ascii'),
+                binascii.hexlify(pbk.to_string()).decode('ascii'))
 
     # Generate signature 
     # When signing, the DER encoding is converted to uncompressed encoding
     def sign_transaction(self, sender, recipient, amount):
-
         sk = SigningKey.from_string(binascii.unhexlify(self.private_key), curve=SECP256k1)
         h = (str(sender) + str(recipient) + str(amount)).encode('utf8')
         signature = sk.sign(h) # The generated signature is binary
