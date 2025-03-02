@@ -370,7 +370,7 @@
               .catch(function (error) {
                 vm.dataLoading = false
                 vm.miningLoading = false
-                vm.message('error', error.response.data.message)
+                vm.message('error', 'Mining failed. Invalid transactions found')
               })
           }).catch(() => {
             vm.message('info', 'Mining cancelled')

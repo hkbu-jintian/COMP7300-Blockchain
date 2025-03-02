@@ -31,7 +31,7 @@ class Verification:
                 return False
         return True
 
-    # Verify the transaction
+    # Verify a single transaction
     @staticmethod
     def verify_transaction(transaction, get_balance, check_funds=True):
         if check_funds:

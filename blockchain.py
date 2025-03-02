@@ -186,33 +186,41 @@ class Blockchain:
         """Create a new block and add open transactions to it."""
         if self.public_key == None:
             return None
-
-        last_block = self.__chain[-1]
-        hashed_block = hash_block(last_block)  # Calculate the hash value of the previous block
-        proof = self.proof_of_work() # PoW only targets transactions in open_transactions, not including the system reward transaction
-
-        txid = str(uuid4())
-        reward_transaction = Transaction(txid, 'MINING', self.public_key, '', MINING_REWARD) # System reward
-
+        
+        # Step 1: Verify all transactions in the transaction pool
         copied_transactions = self.__open_transactions[:]  # Copy the transaction pool records (before adding the reward transaction) (deep copy!)
         for tx in copied_transactions: # Verify the signature
             if not Wallet.verify_transaction(tx):
                 return None
+
+        # Step 2: Hash the last block
+        last_block = self.__chain[-1]
+        last_hash = hash_block(last_block)  # Calculate the hash value of the previous block
         
+        # Step 3: Proof-of-work
+        proof = self.proof_of_work() # PoW only targets transactions in open_transactions, not including the system reward transaction
+
+        # Step 4: Create a reward transaction
+        txid = str(uuid4())
+        reward_transaction = Transaction(txid, 'MINING', self.public_key, '', MINING_REWARD) # System reward
+        
+        # Step 5: Combine the reward transaction with the verified transactions
         copied_transactions.append(reward_transaction) # Add the system reward coinbase transaction
+        
+        # Step 6: Create a new block
         block = Block(  # Create a new block
             len(self.__chain),
-            hashed_block,
+            last_hash,
             copied_transactions,
             proof
         )
 
-        # Add the new block
+        # Step 7: Add the new block to the blockchain
         self.__chain.append(block)
         self.__open_transactions = []
         self.save_data()
 
-        # After mining, broadcast
+        # Step 8: Broadcast the new block
         for node in self.__peer_nodes:
             url = f'http://{node}/broadcast-block' if 'http' not in node else f'{node}/broadcast-block'
             converted_block = block.__dict__.copy()
