@@ -74,6 +74,17 @@ def get_balance():
         }
         return jsonify(response), 500
 
+# Get blockchain information
+@app.route('/chain', methods=['GET'])
+def get_chain():
+    chain_snapshot = blockchain.chain
+    # Add .copy() to prevent unexpected side effect when you manipulate the data
+    dict_chain = [block.__dict__.copy() for block in chain_snapshot]
+    for dict_block in dict_chain:
+        dict_block['transactions'] = [tx.__dict__ for tx in dict_block['transactions']]
+
+    return jsonify(dict_chain), 200
+
 # Add transaction
 @app.route('/transaction', methods=['POST'])
 def add_transaction():
@@ -147,19 +158,10 @@ def mine():
           'wallet_set_up': wallet.public_key != None
       }
       return jsonify(response), 500
+
   
 
-@app.route('/resolve-conflicts', methods=['POST'])
-def resolve_conflicts():
-    replaced = blockchain.resolve()
-    if replaced:
-        response = {'message': 'Chain was replaced!'}
-    else:
-        response = {'message': 'Local chain kept!'}
-    return jsonify(response), 200
-  
-
-@app.route('/broadcast-block', methods=['POST'])
+@app.route('/broadcast_block', methods=['POST'])
 def broadcast_block():
     values = request.get_json()
     if not values:
@@ -190,12 +192,11 @@ def broadcast_block():
         return jsonify(response), 409
 
 
-
 # Broadcast transaction
 # When a new transaction is added, this interface will be called
 # For example, there are 5000 and 5001 two nodes in the network
-# When 5000 node adds a new transaction, it will call the /broadcast-transaction interface of 5001 node to automatically update its local transaction pool
-@app.route('/broadcast-transaction', methods=['POST'])
+# When node 5000 adds a new transaction, it will call the /broadcast_transaction interface of node 5001 to automatically update its local transaction pool
+@app.route('/broadcast_transaction', methods=['POST'])
 def broadcast_transaction():
     values = request.get_json()
     if not values:
@@ -231,18 +232,6 @@ def get_open_transaction():
     dict_transactions = [tx.__dict__ for tx in transactions]
     response = dict_transactions
     return jsonify(response), 200
-
-
-# Get blockchain information
-@app.route('/chain', methods=['GET'])
-def get_chain():
-    chain_snapshot = blockchain.chain
-    # Add .copy() to prevent unexpected side effect when you manipulate the data
-    dict_chain = [block.__dict__.copy() for block in chain_snapshot]
-    for dict_block in dict_chain:
-        dict_block['transactions'] = [tx.__dict__ for tx in dict_block['transactions']]
-
-    return jsonify(dict_chain), 200
 
 
 # Add node
@@ -295,6 +284,16 @@ def get_nodes():
         'all_nodes': nodes,
         'node_id': wallet.node_id
     }
+    return jsonify(response), 200
+
+
+@app.route('/resolve_conflicts', methods=['POST'])
+def resolve_conflicts():
+    replaced = blockchain.resolve()
+    if replaced:
+        response = {'message': 'Chain was replaced!'}
+    else:
+        response = {'message': 'Local chain kept!'}
     return jsonify(response), 200
 
 

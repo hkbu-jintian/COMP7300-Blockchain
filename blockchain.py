@@ -167,10 +167,11 @@ class Blockchain:
             self.__open_transactions.append(transaction)
             self.save_data()
             
-            if not is_receiving:
+            # if the new transaction is self-initiated, broadcast it to other nodes
+            if not is_receiving:    
                 # Broadcast transaction
                 for node in self.__peer_nodes:
-                    url = f'http://{node}/broadcast-transaction' if 'http' not in node else f'{node}/broadcast-transaction'
+                    url = f'http://{node}/broadcast_transaction' if 'http' not in node else f'{node}/broadcast_transaction'
                     try:
                         response = requests.post(url, json={'sender': sender, 'recipient': recipient, 'amount': amount, 'signature': signature})
                         if response.status_code == 400 or response.status_code == 500:
@@ -222,7 +223,7 @@ class Blockchain:
 
         # Step 8: Broadcast the new block
         for node in self.__peer_nodes:
-            url = f'http://{node}/broadcast-block' if 'http' not in node else f'{node}/broadcast-block'
+            url = f'http://{node}/broadcast_block' if 'http' not in node else f'{node}/broadcast_block'
             converted_block = block.__dict__.copy()
             converted_block['transactions'] = [tx.__dict__ for tx in converted_block['transactions']]
             try:
@@ -236,28 +237,28 @@ class Blockchain:
             
         return block
 
-    # Receive the broadcast of other nodes, and process the block
-    def add_block(self, block):
-        transactions = [Transaction(tx['txid'], tx['sender'], tx['recipient'], tx['signature'], tx['amount']) for tx in block['transactions']]
-        proof_is_valid = Verification.valid_proof(transactions[:-1], block['previous_hash'], block['proof'])
-        hashes_match = hash_block(self.chain[-1]) == block['previous_hash']
-        if not proof_is_valid or not hashes_match:
-            return False
-        converted_block = Block(block['index'], block['previous_hash'], transactions, block['proof'], block['timestamp'])
-        self.__chain.append(converted_block)
-        stored_transactions = self.__open_transactions[:]
+        # Receive the broadcast of other nodes, and process the block
+        def add_block(self, block):
+            transactions = [Transaction(tx['txid'], tx['sender'], tx['recipient'], tx['signature'], tx['amount']) for tx in block['transactions']]
+            proof_is_valid = Verification.valid_proof(transactions[:-1], block['previous_hash'], block['proof'])
+            hashes_match = hash_block(self.chain[-1]) == block['previous_hash']
+            if not proof_is_valid or not hashes_match:
+                return False
+            converted_block = Block(block['index'], block['previous_hash'], transactions, block['proof'], block['timestamp'])
+            self.__chain.append(converted_block)
+            stored_transactions = self.__open_transactions[:]
 
-        # After adding the broadcasted block, clean up the records in the transaction pool
-        for itx in block['transactions']:
-            for opentx in stored_transactions:
-                if opentx.sender == itx['sender'] and opentx.recipient == itx['recipient'] and opentx.amount == itx['amount'] and opentx.signature == itx['signature']:
-                    try:
-                        self.__open_transactions.remove(opentx)
-                    except ValueError:
-                        print('Item was already removed')
+            # After adding the broadcasted block, clean up the records in the transaction pool
+            for itx in block['transactions']:
+                for opentx in stored_transactions:
+                    if opentx.sender == itx['sender'] and opentx.recipient == itx['recipient'] and opentx.amount == itx['amount'] and opentx.signature == itx['signature']:
+                        try:
+                            self.__open_transactions.remove(opentx)
+                        except ValueError:
+                            print('Item was already removed')
 
-        self.save_data()
-        return True
+            self.save_data()
+            return True
 
     # Resolve conflicts
     def resolve (self):
