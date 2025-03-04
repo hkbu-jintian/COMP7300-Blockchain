@@ -379,7 +379,7 @@
         onResolve: function() { // resolve conflicts
           const vm = this
           vm.dataLoading = true
-          axios.post('/resolve-conflicts')
+          axios.post('/resolve_conflicts')
             .then(response => {
               vm.dataLoading = false
               vm.onLoadData()
