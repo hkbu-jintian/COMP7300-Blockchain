@@ -183,12 +183,13 @@ def broadcast_block():
     elif block['index'] > blockchain.chain[-1].index: # If the length of the broadcasted block is greater than the length of the current block
         # print(block['index'], blockchain.chain[-1].index)
         response = {'message': 'Blockchain seems to differ from local blockchain'}
-        print('Blockchain seems to differ from local blockchain')
+        print('The local blockchain seems to shorter, new block not added')
+        print('conflicts detected')
         blockchain.resolve_conflicts = True
         return jsonify(response), 200
     else:
         response = {'message': 'Blockchain seems to be shorter, block not added'}
-        print('Blockchain seems to be shorter, block not added')
+        print('The local blockchain seems to be longer, new block not added')
         return jsonify(response), 409
 
 
