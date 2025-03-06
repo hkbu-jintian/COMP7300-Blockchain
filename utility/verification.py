@@ -1,6 +1,8 @@
 from utility.hash_util import hash_block, hash_string_256
 from wallet import Wallet
 
+difficulty = 4 # The difficulty level of the proof-of-work
+
 class Verification:
     """Proof-of-work"""
     """SHA256(Transaction Records + Previous Block's Hash + Random Number)"""
@@ -12,7 +14,7 @@ class Verification:
         guess = (str([tx.to_ordered_dict() for tx in transactions]) + str(last_hash) + str(proof)).encode()
         guess_hash = hash_string_256(guess)
         # print(guess_hash)
-        return guess_hash[0:2] == '00' # You can change the difficulty level by changing the number of 0s
+        return guess_hash.startswith(difficulty * '0') # You can change the difficulty level by changing the number of 0s
 
     # Verify the hash value in the block
     @classmethod
