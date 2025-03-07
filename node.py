@@ -7,8 +7,8 @@ from blockchain import Blockchain
 app = Flask(__name__, template_folder='ui', static_folder='ui', static_url_path='/ui')
 CORS(app)
 
-# wallet = Wallet()
-# blockchain = Blockchain(wallet.public_key)
+wallet = None
+blockchain = None
 
 # Home page route
 @app.route('/', methods=['GET'])  
@@ -77,6 +77,7 @@ def get_balance():
 # Get blockchain information
 @app.route('/chain', methods=['GET'])
 def get_chain():
+    blockchain.load_data()
     chain_snapshot = blockchain.chain
     # Add .copy() to prevent unexpected side effect when you manipulate the data
     dict_chain = [block.__dict__.copy() for block in chain_snapshot]
@@ -159,8 +160,7 @@ def mine():
       }
       return jsonify(response), 500
 
-  
-
+# Broadcast block
 @app.route('/broadcast_block', methods=['POST'])
 def broadcast_block():
     values = request.get_json()
@@ -171,10 +171,12 @@ def broadcast_block():
         response = {'message': 'Some data is missing.'}
         return jsonify(response), 400
     block = values['block']
-    if block['index'] == blockchain.chain[-1].index + 1:  # If the index of the broadcasted block is equal to the index of the last block + 1
+    
+    # If the index of the broadcasted block is equal to the index of the last block + 1
+    if block['index'] == blockchain.chain[-1].index + 1:
         if blockchain.add_block(block):
             response = {'message': 'Block added.'}
-            print('Block added.')
+            print('Block added')
             return jsonify(response), 201
         else:
             response = {'message': 'Block seems invalid.'}
@@ -184,11 +186,10 @@ def broadcast_block():
         # print(block['index'], blockchain.chain[-1].index)
         response = {'message': 'Blockchain seems to differ from local blockchain'}
         print('The local blockchain seems to shorter, new block not added')
-        print('conflicts detected')
         blockchain.resolve_conflicts = True
         return jsonify(response), 200
     else:
-        response = {'message': 'Blockchain seems to be shorter, block not added'}
+        response = {'message': 'The local blockchain seems to be longer, new block not added'}
         print('The local blockchain seems to be longer, new block not added')
         return jsonify(response), 409
 
@@ -250,7 +251,6 @@ def add_node():
         }
         return jsonify(response), 400
     node = values.get('node')
-    node = values['node']
     blockchain.add_peer_node(node)
     response = {
         'message': 'Node added successfully.',

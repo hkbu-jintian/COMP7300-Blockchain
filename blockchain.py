@@ -76,9 +76,11 @@ class Blockchain:
                 peer_nodes = json.loads(file_content[2])
                 self.__peer_nodes = set(peer_nodes)
         except (IOError, IndexError): # Handle the problem of empty file
-            print('Handled exception...')
-        finally:
-            print('Cleanup!')
+            genesis_block = Block(0, '', [], 100, 0) # Genesis block
+            self.chain = [genesis_block]
+            self.__open_transactions = []
+            self.__peer_nodes = set()
+            self.save_data()
 
     # Save transactions to local file
     def save_data(self):
